@@ -184,10 +184,13 @@ class NumericDiffCostFunction : public SizedCostFunction<kNumResiduals, Ns...> {
   NumericDiffCostFunction(
       CostFunctor* functor,
       Ownership ownership = TAKE_OWNERSHIP,
+#pragma warning(push)
+#pragma warning(disable : 4100)
       int num_residuals = kNumResiduals,
+#pragma warning(pop)
       const NumericDiffOptions& options = NumericDiffOptions())
       : functor_(functor), ownership_(ownership), options_(options) {
-    if (kNumResiduals == DYNAMIC) {
+    if constexpr (kNumResiduals == DYNAMIC) {
       SizedCostFunction<kNumResiduals, Ns...>::set_num_residuals(num_residuals);
     }
   }

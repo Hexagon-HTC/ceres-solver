@@ -106,9 +106,12 @@ class CERES_EXPORT GradientProblem {
   bool Plus(const double* x, const double* delta, double* x_plus_delta) const;
 
  private:
+#pragma warning(push)
+#pragma warning(disable : 4251)
   std::unique_ptr<FirstOrderFunction> function_;
   std::unique_ptr<LocalParameterization> parameterization_;
   std::unique_ptr<double[]> scratch_;
+#pragma warning(pop)
 };
 
 }  // namespace ceres

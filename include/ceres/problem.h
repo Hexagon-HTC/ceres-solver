@@ -549,7 +549,10 @@ class CERES_EXPORT Problem {
  private:
   friend class Solver;
   friend class Covariance;
+#pragma warning(push)
+#pragma warning(disable : 4251)
   std::unique_ptr<internal::ProblemImpl> impl_;
+#pragma warning(pop)
 };
 
 }  // namespace ceres

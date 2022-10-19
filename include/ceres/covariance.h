@@ -448,7 +448,10 @@ class CERES_EXPORT Covariance {
       double* covariance_matrix) const;
 
  private:
-  std::unique_ptr<internal::CovarianceImpl> impl_;
+#pragma warning(push)
+#pragma warning(disable : 4251)
+    std::unique_ptr<internal::CovarianceImpl> impl_;
+#pragma warning(pop)
 };
 
 }  // namespace ceres
