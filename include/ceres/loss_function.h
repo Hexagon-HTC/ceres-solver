@@ -305,7 +305,10 @@ class CERES_EXPORT ComposedLoss : public LossFunction {
   void Evaluate(double, double*) const override;
 
  private:
+#pragma warning(push)
+#pragma warning(disable : 4251)
   std::unique_ptr<const LossFunction> f_, g_;
+#pragma warning(pop)
   const Ownership ownership_f_, ownership_g_;
 };
 
@@ -344,7 +347,10 @@ class CERES_EXPORT ScaledLoss : public LossFunction {
   void Evaluate(double, double*) const override;
 
  private:
+#pragma warning(push)
+#pragma warning(disable : 4251)
   std::unique_ptr<const LossFunction> rho_;
+#pragma warning(pop)
   const double a_;
   const Ownership ownership_;
 };
@@ -420,7 +426,10 @@ class CERES_EXPORT LossFunctionWrapper : public LossFunction {
   }
 
  private:
+#pragma warning(push)
+#pragma warning(disable : 4251)
   std::unique_ptr<const LossFunction> rho_;
+#pragma warning(pop)
   Ownership ownership_;
 };
 

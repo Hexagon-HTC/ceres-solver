@@ -119,7 +119,7 @@ struct NumericDiff {
 
     // For Ridders' method, the initial step size is required to be large,
     // thus ridders_relative_initial_step_size is used.
-    if (kMethod == RIDDERS) {
+    if constexpr (kMethod == RIDDERS) {
       min_step_size =
           std::max(min_step_size, options.ridders_relative_initial_step_size);
     }
@@ -134,7 +134,7 @@ struct NumericDiff {
     for (int j = 0; j < parameter_block_size_internal; ++j) {
       const double delta = std::max(min_step_size, step_size(j));
 
-      if (kMethod == RIDDERS) {
+      if constexpr (kMethod == RIDDERS) {
         if (!EvaluateRiddersJacobianColumn(functor,
                                            j,
                                            delta,
@@ -176,7 +176,10 @@ struct NumericDiff {
                                      int num_residuals,
                                      int parameter_block_size,
                                      const double* x_ptr,
+#pragma warning(push)
+#pragma warning(disable : 4100)
                                      const double* residuals_at_eval_point,
+#pragma warning(pop)
                                      double** parameters,
                                      double* x_plus_delta_ptr,
                                      double* temp_residuals_ptr,
@@ -206,7 +209,7 @@ struct NumericDiff {
     // 2. Subtract residuals for the backward (or 0) part.
     // 3. Divide out the run.
     double one_over_delta = 1.0 / delta;
-    if (kMethod == CENTRAL || kMethod == RIDDERS) {
+    if constexpr (kMethod == CENTRAL || kMethod == RIDDERS) {
       // Compute the function on the other side of x(parameter_index).
       x_plus_delta(parameter_index) = x(parameter_index) - delta;
 

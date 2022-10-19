@@ -77,7 +77,9 @@ class CERES_EXPORT GradientChecker {
       const CostFunction* function,
       const std::vector<const LocalParameterization*>* local_parameterizations,
       const NumericDiffOptions& options);
-
+      
+#pragma warning(push)
+#pragma warning(disable : 4251)
   // Contains results from a call to Probe for later inspection.
   struct CERES_EXPORT ProbeResults {
     // The return value of the cost function.
@@ -144,6 +146,7 @@ class CERES_EXPORT GradientChecker {
   const CostFunction* function_;
   std::unique_ptr<CostFunction> finite_diff_cost_function_;
 };
+#pragma warning(pop)
 
 }  // namespace ceres
 

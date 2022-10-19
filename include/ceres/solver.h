@@ -360,6 +360,8 @@ class CERES_EXPORT Solver {
     //
     // If Solver::Options::preconditioner_type == SUBSET, then
     // residual_blocks_for_subset_preconditioner must be non-empty.
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::unordered_set<ResidualBlockId>
         residual_blocks_for_subset_preconditioner;
 
@@ -788,6 +790,7 @@ class CERES_EXPORT Solver {
 
     // IterationSummary for each minimizer iteration in order.
     std::vector<IterationSummary> iterations;
+#pragma warning (pop)
 
     // Number of minimizer iterations in which the step was
     // accepted. Unless use_non_monotonic_steps is true this is also
@@ -944,6 +947,8 @@ class CERES_EXPORT Solver {
         SPARSE_NORMAL_CHOLESKY;
 #endif
 
+#pragma warning(push)
+#pragma warning(disable : 4251)
     // Size of the elimination groups given by the user as hints to
     // the linear solver.
     std::vector<int> linear_solver_ordering_given;
@@ -991,6 +996,7 @@ class CERES_EXPORT Solver {
     // ordering, or if the problem contains some constant or inactive
     // parameter blocks.
     std::vector<int> inner_iteration_ordering_used;
+#pragma warning(pop)
 
     // Type of the preconditioner requested by the user.
     PreconditionerType preconditioner_type_given = IDENTITY;

@@ -251,7 +251,10 @@ class CERES_EXPORT GradientProblemSolver {
     // executed, then set update_state_every_iteration to true.
     //
     // The solver does NOT take ownership of these pointers.
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::vector<IterationCallback*> callbacks;
+#pragma warning(pop)
   };
 
   struct CERES_EXPORT Summary {
@@ -269,7 +272,10 @@ class CERES_EXPORT GradientProblemSolver {
     TerminationType termination_type = FAILURE;
 
     // Reason why the solver terminated.
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::string message = "ceres::GradientProblemSolve was not called.";
+#pragma warning(pop)
 
     // Cost of the problem (value of the objective function) before
     // the optimization.
@@ -280,7 +286,10 @@ class CERES_EXPORT GradientProblemSolver {
     double final_cost = -1.0;
 
     // IterationSummary for each minimizer iteration in order.
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::vector<IterationSummary> iterations;
+#pragma warning(pop)
 
     // Number of times the cost (and not the gradient) was evaluated.
     int num_cost_evaluations = -1;
