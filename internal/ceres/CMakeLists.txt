@@ -101,30 +101,23 @@ endif()
 find_package(Threads QUIET)
 list(APPEND CERES_LIBRARY_PUBLIC_DEPENDENCIES Threads::Threads)
 
-if (NOT MINIGLOG AND GLOG_FOUND)
-  list(APPEND CERES_LIBRARY_PUBLIC_DEPENDENCIES ${GLOG_LIBRARIES})
-  if (gflags_FOUND)
-    # If glog & gflags are both found, we assume that glog was built with
-    # gflags, as it is awkward to perform a try_compile() to verify this
-    # when gflags is an imported target (as it is in newer versions).
-    # As glog #includes gflags/gflags.h in glog/logging.h if compiled with
-    # gflags, it is thus a public dependency for Ceres in this case.
-    list(APPEND CERES_LIBRARY_PUBLIC_DEPENDENCIES gflags)
-  endif()
-endif (NOT MINIGLOG AND GLOG_FOUND)
+if (NOT MINIGLOG)
+  list(APPEND CERES_LIBRARY_PUBLIC_DEPENDENCIES glog::glog)
+endif (NOT MINIGLOG)
 
-if (SUITESPARSE AND SuiteSparse_FOUND)
-  # Define version information for use in Solver::FullReport.
-  add_definitions(-DCERES_SUITESPARSE_VERSION="${SuiteSparse_VERSION}")
-  list(APPEND CERES_LIBRARY_PRIVATE_DEPENDENCIES SuiteSparse::CHOLMOD
-    SuiteSparse::SPQR)
-endif (SUITESPARSE AND SuiteSparse_FOUND)
+if(EIGEN3_FOUND)
+    list(APPEND CERES_LIBRARY_PUBLIC_DEPENDENCIES Eigen3::Eigen)
+endif(EIGEN3_FOUND)
 
-if (CXSPARSE AND CXSparse_FOUND)
+if (SUITESPARSE AND SUITESPARSE_FOUND)
   # Define version information for use in Solver::FullReport.
-  add_definitions(-DCERES_CXSPARSE_VERSION="${CXSparse_VERSION}")
-  list(APPEND CERES_LIBRARY_PRIVATE_DEPENDENCIES CXSparse::CXSparse)
-endif (CXSPARSE AND CXSparse_FOUND)
+  add_definitions(-DCERES_SUITESPARSE_VERSION="${SUITESPARSE_VERSION}")
+endif ()
+
+if (CXSPARSE AND CXSPARSE_FOUND)
+  # Define version information for use in Solver::FullReport.
+  add_definitions(-DCERES_CXSPARSE_VERSION="${CXSPARSE_VERSION}")
+endif ()
 
 if (ACCELERATESPARSE AND AccelerateSparse_FOUND)
   list(APPEND CERES_LIBRARY_PRIVATE_DEPENDENCIES ${AccelerateSparse_LIBRARIES})
@@ -148,10 +141,6 @@ if (CUDA_FOUND)
             $<TARGET_FILE:cuda_dense_cholesky_test>)
   endif (BUILD_TESTING)
 endif (CUDA_FOUND)
-
-if (LAPACK_FOUND)
-  list(APPEND CERES_LIBRARY_PRIVATE_DEPENDENCIES ${LAPACK_LIBRARIES})
-endif ()
 
 # Source files that contain private symbols and live in the ceres::internal
 # namespace. The corresponding symbols (classes, functions, etc.) are expected
@@ -283,6 +272,12 @@ endif()
 add_library(ceres $<TARGET_OBJECTS:ceres_internal> ${CERES_LIBRARY_SOURCE})
 
 if(BUILD_SHARED_LIBS)
+  if(CERES_BUILD_TARGET STREQUAL "OSX" OR CERES_BUILD_TARGET STREQUAL "IOS")
+    list(APPEND CERES_LIBRARY_PRIVATE_DEPENDENCIES "-framework Accelerate")
+  endif()
+  if (SUITESPARSE AND SUITESPARSE_FOUND)
+    list(APPEND CERES_LIBRARY_PRIVATE_DEPENDENCIES ${CERES_SHARED_SUITESPARSE_LIBRARIES})
+  endif()
   # While building shared libraries, we additionally require a static variant to
   # be able to access internal symbols which are not intended for general use.
   # Therefore, create a static library from object files and apply all the
@@ -300,6 +295,13 @@ if(BUILD_SHARED_LIBS)
   # updating the corresponding generate_export_header invocation.
   target_compile_definitions(ceres_static PUBLIC CERES_STATIC_DEFINE)
 else()
+  set(CERES_LIBRARY_DEPENDENCIES
+        ${CERES_LIBRARY_PUBLIC_DEPENDENCIES}
+        ${CERES_LIBRARY_PRIVATE_DEPENDENCIES})
+  if (SUITESPARSE AND SUITESPARSE_FOUND)
+    list(APPEND CERES_LIBRARY_DEPENDENCIES ${CERES_STATIC_SUITESPARSE_LIBRARIES})
+  endif()
+  target_link_libraries(ceres PUBLIC ${CERES_LIBRARY_DEPENDENCIES})
   # In a static library build, not additional access layer is necessary as all
   # symbols are visible.
   add_library(ceres_static ALIAS ceres)
@@ -322,13 +324,13 @@ target_compile_features(ceres_internal PRIVATE $<TARGET_PROPERTY:ceres,COMPILE_F
 # language standard revision.
 target_compile_features(ceres PUBLIC cxx_std_14)
 
-set_target_properties(ceres PROPERTIES
-  VERSION ${CERES_VERSION}
-  SOVERSION 3)
-
 target_link_libraries(ceres
   PUBLIC ${CERES_LIBRARY_PUBLIC_DEPENDENCIES}
   PRIVATE ${CERES_LIBRARY_PRIVATE_DEPENDENCIES})
+
+target_include_directories(ceres PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Add the Ceres headers to its target.
 #
