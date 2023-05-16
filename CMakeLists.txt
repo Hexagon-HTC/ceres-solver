@@ -109,7 +109,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${Ceres_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${Ceres_BINARY_DIR}/lib)
 # Set postfixes for generated libraries based on buildtype.
 set(CMAKE_RELEASE_POSTFIX "")
-set(CMAKE_DEBUG_POSTFIX "-debug")
 
 # Read the Ceres version from the source, such that we only ever have a single
 # definition of the Ceres version.
